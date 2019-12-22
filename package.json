@@ -1,6 +1,6 @@
 {
 	"name": "hermes-package-updater",
-	"version": "2.0.10",
+	"version": "2.0.11",
 	"description": "PM2 Sample Module",
 	"main": "app.js",
 	"dependencies": {
@@ -29,7 +29,7 @@
 			"script": "index.js"
 		}
 	],
-	"author": "alexandru.luca@hermes.com",
+	"author": "luca.p.alexandru@gmail.com",
 	"license": "MIT",
 	"devDependencies": {
 		"husky": "^0.14.3"
