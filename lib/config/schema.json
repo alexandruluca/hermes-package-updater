@@ -1,0 +1,51 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"band": {
+			"type": "string",
+			"enum": ["develop", "release", "production", "qa"]
+		},
+		"serverTag": {
+			"type": "string"
+		},
+		"watchedApps": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"path": {
+						"type": "string"
+					},
+					"reload": {
+						"type": "boolean"
+					}
+				},
+				"required": ["name", "path", "reload"]
+			}
+		},
+		"deploymentDir": {
+			"type": "string"
+		}
+	},
+	"required": ["band", "watchedApps", "serverTag"],
+	"anyOf": [{
+		"properties": {
+			"band": {
+				"type": "string",
+				"enum": ["production"]
+			}
+		},
+		"required": ["serverTag"]
+	}, {
+		"properties": {
+			"band": {
+				"type": "string",
+				"enum": ["release", "develop", "qa"]
+			}
+		}
+	}]
+}

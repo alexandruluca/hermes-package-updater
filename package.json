@@ -1,0 +1,36 @@
+{
+  "name": "hermes-package-updater",
+  "version": "2.0.8",
+  "description": "PM2 Sample Module",
+  "main": "app.js",
+  "dependencies": {
+    "ajv": "6.5.2",
+    "err-code": "1.1.2",
+    "log4js": "^4.3.1",
+    "pm2": "2.10.4",
+    "pmx": "beta",
+    "semver": "5.5.0",
+    "shelljs": "0.8.2",
+    "hermes-cli": "git+ssh://git@github.com/hermesMobile/hermes-cli.git#1.6.74"
+  },
+  "scripts": {
+    "precommit": "npm version patch --no-git-tag-version  && git add package.json && node ./hooks/pre-commit && git add ./README.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:hermesMobile/hermes-package-updater.git"
+  },
+  "config": {},
+  "apps": [
+    {
+      "merge_logs": true,
+      "max_memory_restart": "200M",
+      "script": "index.js"
+    }
+  ],
+  "author": "alexandru.luca@hermes.com",
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^0.14.3"
+  }
+}

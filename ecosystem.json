@@ -1,0 +1,13 @@
+{
+	"apps": [
+		{
+			"name": "com.hermes.hermes-package-updater",
+			"script": "index.js",
+			"watch": true,
+			"env": {
+				"NODE_ENV": "development"
+			}
+
+		}
+	]
+}
