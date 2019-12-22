@@ -3,7 +3,7 @@
 ## Instalation
 
 ```
-pm2 install git+ssh://git@github.com:hermesMobile/hermes-package-updater.git#{{version}}
+pm2 install git+ssh://git@github.com:alexandruluca/hermes-cli.git#{{version}}
 ```
 
 ## Intro
@@ -49,8 +49,7 @@ in "/app"
 Each project needs to have a hermes-manifest.json file located in the root of the project. The bare minimum hermes manifest configuration is following
 "include" is used to include a subset of files/directories out of the excluded folders matched in "exclude"
 
-For example, we can exclude "server/service/hermes-api-client" but include only "server/service/hermes-api-client/dist". The example below is used by hermes
-http://github.com/hermesMobile/hermes
+For example, we can exclude "server/service/hermes-api-client" but include only "server/service/hermes-api-client/dist"
 
 ```
 {

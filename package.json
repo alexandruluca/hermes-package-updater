@@ -1,6 +1,6 @@
 {
   "name": "hermes-package-updater",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "PM2 Sample Module",
   "main": "app.js",
   "dependencies": {
@@ -11,14 +11,14 @@
     "pmx": "beta",
     "semver": "5.5.0",
     "shelljs": "0.8.2",
-    "hermes-cli": "git+ssh://git@github.com/hermesMobile/hermes-cli.git#1.6.74"
+    "hermes-cli": "git+ssh://git@github.com:alexandruluca/hermes-cli.git#2.0.0"
   },
   "scripts": {
     "precommit": "npm version patch --no-git-tag-version  && git add package.json && node ./hooks/pre-commit && git add ./README.md"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:hermesMobile/hermes-package-updater.git"
+    "url": "git+ssh://git@github.com:alexandruluca/hermes-package-updater.git"
   },
   "config": {},
   "apps": [
