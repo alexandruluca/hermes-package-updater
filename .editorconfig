@@ -26,7 +26,7 @@ tab_width=4
 indent_style=tab
 tab_width=4
 
-[{launchbase,*.applejs,*.js}]
+[{hermes,*.applejs,*.js}]
 indent_style=tab
 tab_width=4
 
