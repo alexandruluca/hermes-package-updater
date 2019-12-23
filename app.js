@@ -222,13 +222,13 @@ async function getApps() {
 function getProjectRoot(dirPath, checkRecursive) {
 	checkRecursive = checkRecursive !== false;
 
-	return pathExists(path.join(dirPath, 'hermes-manifest.json')).then(exists => {
+	return pathExists(path.join(dirPath, 'hermes.json')).then(exists => {
 		if (exists) {
 			return dirPath;
 		}
 
 		if (!checkRecursive) {
-			throw new Error(`hermes-manifest.json does not exist at path=${dirPath}`);
+			throw new Error(`hermes.json does not exist at path=${dirPath}`);
 		}
 
 		var dirname = path.dirname(dirPath);
