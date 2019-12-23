@@ -3,7 +3,7 @@
 ## Instalation
 
 ```
-pm2 install git+ssh://git@github.com:alexandruluca/hermes-cli.git#2.0.17
+pm2 install git+ssh://git@github.com:alexandruluca/hermes-cli.git#2.0.18
 ```
 
 ## Intro
