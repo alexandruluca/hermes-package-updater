@@ -202,7 +202,8 @@ async function getApps() {
 	}));
 
 	var getApps = apps.map(item => {
-		return getProjectRoot(item.path || item.pm2_env.pm_cwd || item.pm2_env.PWD).then(projectPath => {
+		let pm2ExecPath = path.dirname(item.pm2_env.pm_exec_path);
+		return getProjectRoot(item.path || pm2ExecPath || item.pm2_env.pm_cwd || item.pm2_env.PWD).then(projectPath => {
 			return {
 				name: item.name,
 				dir: projectPath
