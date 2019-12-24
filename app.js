@@ -216,6 +216,9 @@ async function getApps() {
 		apps = apps.filter(app => !!app);
 
 		return apps.concat(watchedApps);
+	}).then(apps => {
+		logger.info(`Monitored apps:`, apps.map(app => app.name));
+		return apps;
 	});
 }
 
