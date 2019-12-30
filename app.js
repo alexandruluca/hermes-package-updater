@@ -7,8 +7,8 @@ const config = require('./lib/config');
 const {UpdaterFactory} = require('./lib/application/factories/UpdaterFactory');
 const {ErrorCode: UpdaterErrorCode} = require('./lib/updater/Updater');
 const updater = UpdaterFactory.getUpdaterInstance(config.band);
-const updaterUtils = require('./lib/updater/utils');
 const _package = require('./package.json');
+const {emitMessage} = require('./lib/utils');
 
 const deploymentClient = require('hermes-cli/lib/deploy').client({
 	serverTag: config.serverTag,
@@ -122,6 +122,8 @@ async function doUpdate(deployment, options) {
 
 					promise = promise.then(() => {
 						let message = `${app.name} has been updated from ${(app.previousDeployment || app).toString()} to ${app.toString()}`;
+
+						emitMessage({title: 'New update available', body: message});
 
 						emitApplicationUpdateEvent(app);
 						logger.info(message);
