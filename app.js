@@ -123,7 +123,7 @@ async function doUpdate(deployment, options) {
 					promise = promise.then(() => {
 						let message = `${app.name} has been updated from ${(app.previousDeployment || app).toString()} to ${app.toString()}`;
 
-						emitMessage({title: 'New update available', body: message});
+						emitMessage(message);
 
 						emitApplicationUpdateEvent(app);
 						logger.info(message);

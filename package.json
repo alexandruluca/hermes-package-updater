@@ -1,6 +1,6 @@
 {
 	"name": "hermes-package-updater",
-	"version": "2.0.35",
+	"version": "2.0.36",
 	"description": "PM2 Sample Module",
 	"main": "app.js",
 	"dependencies": {
