@@ -1,6 +1,6 @@
 {
 	"name": "hermes-package-updater",
-	"version": "2.0.32",
+	"version": "2.0.33",
 	"description": "PM2 Sample Module",
 	"main": "app.js",
 	"dependencies": {
@@ -11,7 +11,7 @@
 		"pmx": "beta",
 		"semver": "5.5.0",
 		"shelljs": "0.8.2",
-		"hermes-cli": "https://github.com/alexandruluca/hermes-cli.git#2.0.13"
+		"hermes-cli": "https://github.com/alexandruluca/hermes-cli.git#2.0.15"
 	},
 	"scripts": {
 		"start": "NODE_ENV=development node index.js",
