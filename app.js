@@ -137,7 +137,8 @@ async function doUpdate(deployment, options) {
 				} else if (err.code === UpdaterErrorCode.DEPLOYMENT_NOT_FOUND) {
 					logger.info(`[${app.name}] version update skipped due to no existing deployments`);
 				} else {
-					logger.error(`${app.name} update failed with`, err);//
+					logger.error(`${app.name} update failed with`, err);
+					emitMessage(`${app.name} update failed with ${err.message}`);
 				}
 			}
 		});
@@ -148,8 +149,9 @@ async function doUpdate(deployment, options) {
 
 		await Promise.all(pruneOldDeployments);
 
-	} catch(err) {
+	} catch (err) {
 		logger.error('update failed with', err);
+		emitMessage(`update failed with ${err.message}`)
 	} finally {
 
 	}
