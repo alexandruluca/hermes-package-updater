@@ -171,9 +171,9 @@ function pm2List() {
 }
 
 async function pm2Reload(appName) {
-	let isWatchedApp = !!config.watchedApps.find(app => app.name === appName);
+	let watchedApp = config.watchedApps.find(app => app.name === appName);
 
-	if(isWatchedApp) {
+	if (watchedApp && !watchedApp.reload) {
 		logger.info(`${appName} is a static app, skipping reload`);
 		return;
 	}
