@@ -111,7 +111,7 @@ async function doUpdate(deployment, options) {
 
 		let pruneOldDeployments = [];
 
-		var reloadApps = appUpdates.map(({app, success, err}) => {
+		var reloadApps = appUpdates.map(async ({app, success, err}) => {
 			if (success) {
 				let apps = app.siblingApps.concat(app);
 
@@ -123,15 +123,14 @@ async function doUpdate(deployment, options) {
 						return app.pruneOldDeployments();
 					});
 
-					promise = promise.then(async() => {
+					promise = promise.then(async () => {
 						let message = `Application ${app.name} has been updated from ${(app.previousDeployment || app).toString()} to ${app.toString()}`;
 
 						emitMessage({message, type: 'success'});
 
 						emitApplicationUpdateEvent(app);
 						logger.info(message);
-						let state = await pm2Reload(app.name);
-						logger.info(`${app.name} was ${state}`);
+						await reloadApp(app.name);
 
 					});
 					return promise;
@@ -139,6 +138,7 @@ async function doUpdate(deployment, options) {
 			} else {
 				if (err.code === UpdaterErrorCode.VERSION_INSTALLED) {
 					logger.info(`[${app.name}] version update skipped, app is up to date @${app.version}`);
+					await reloadApp(app.name, true);
 				} else if (err.code === UpdaterErrorCode.DEPLOYMENT_NOT_FOUND) {
 					logger.info(`[${app.name}] version update skipped due to no existing deployments`);
 				} else {
@@ -176,3 +176,21 @@ async function getApps() {
 	return apps;
 }
 
+async function reloadApp(appName, skipIfStarted) {
+	let state = await pm2Reload(appName, skipIfStarted);
+	let message;
+	let type;
+
+	if (state === 'started') {
+		message = `${appName} was started`;
+		type = 'success';
+	} else if (state === 'reloaded') {
+		message = `${appName} was reloaded`;
+		type = 'success';
+	} else if (state === 'running') {
+		return;
+	}
+
+	logger.info(message);
+	emitMessage({message, type});
+}
