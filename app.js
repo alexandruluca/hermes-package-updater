@@ -1,7 +1,5 @@
-const path = require('path');
 const pm2 = require('pm2');
 const pmx = require('pmx');
-const {pathExists} = require('./lib/utils');
 const logger = require('./lib/logger');
 const config = require('./lib/config');
 const {UpdaterFactory} = require('./lib/application/factories/UpdaterFactory');
@@ -9,6 +7,11 @@ const {ErrorCode: UpdaterErrorCode} = require('./lib/updater/Updater');
 const updater = UpdaterFactory.getUpdaterInstance(config.band);
 const _package = require('./package.json');
 const {emitMessage} = require('./lib/utils');
+const {ensureDeploymentLocation} = require('./lib/utils/app');
+const {pm2Reload} = require('./lib/utils/pm2');
+const notifier = require('./app-notifier');
+
+notifier.run();
 
 const deploymentClient = require('hermes-cli/lib/deploy').client({
 	serverTag: config.serverTag,
@@ -41,15 +44,15 @@ function getEmitAppMeta(app) {
 }
 
 pmx.initModule({}, function (err, conf) {
-	if(err) {
+	if (err) {
 		return logger.error(err);
 	}
 	logger.info(`${_package.name} started successfully on band='${config.isProduction ? 'production' : config.band}'`);
-	if(config.serverTag) {
+	if (config.serverTag) {
 		logger.info(`${_package.name} listening for changes on server with tag='${config.serverTag}'`)
 	}
 
-	pmx.action('show:versions', function(reply) {
+	pmx.action('show:versions', function (reply) {
 		var apps = updater.getApps();
 		apps = Object.keys(apps).map(name => `${name} [${apps[name].deploymentName}] version@${apps[name].version}`);
 		reply(apps);
@@ -94,7 +97,7 @@ async function doUpdate(deployment, options) {
 	try {
 		apps.forEach(app => {
 			apps.forEach((siblingApp, idx) => {
-				if(app.dir === siblingApp.dir && app !== siblingApp) {
+				if (app.dir === siblingApp.dir && app !== siblingApp) {
 					app.siblingApps = app.siblingApps || [];
 					app.siblingApps.push(siblingApp);
 					apps.splice(idx, 1);
@@ -109,25 +112,27 @@ async function doUpdate(deployment, options) {
 		let pruneOldDeployments = [];
 
 		var reloadApps = appUpdates.map(({app, success, err}) => {
-			if(success) {
+			if (success) {
 				let apps = app.siblingApps.concat(app);
 
 				return apps.reduce((promise, app) => {
 					pruneOldDeployments.push(function () {
-						if(!app.pruneOldDeployments) {
+						if (!app.pruneOldDeployments) {
 							return Promise.resolve();
 						}
 						return app.pruneOldDeployments();
 					});
 
-					promise = promise.then(() => {
+					promise = promise.then(async() => {
 						let message = `Application ${app.name} has been updated from ${(app.previousDeployment || app).toString()} to ${app.toString()}`;
 
-						emitMessage(message);
+						emitMessage({message, type: 'success'});
 
 						emitApplicationUpdateEvent(app);
 						logger.info(message);
-						return pm2Reload(app.name);
+						let state = await pm2Reload(app.name);
+						logger.info(`${app.name} was ${state}`);
+
 					});
 					return promise;
 				}, Promise.resolve());
@@ -138,7 +143,7 @@ async function doUpdate(deployment, options) {
 					logger.info(`[${app.name}] version update skipped due to no existing deployments`);
 				} else {
 					logger.error(`${app.name} update failed with`, err);
-					emitMessage(`${app.name} update failed with ${err.message}`);
+					emitMessage({message: `${app.name} update failed with ${err.message}`, type: 'error'});
 				}
 			}
 		});
@@ -151,99 +156,23 @@ async function doUpdate(deployment, options) {
 
 	} catch (err) {
 		logger.error('update failed with', err);
-		emitMessage(`update failed with ${err.message}`)
+		emitMessage({message: `update failed with ${err.message}`, type: 'error'})
 	} finally {
 
 	}
 }
 
-function pm2List() {
-	return new Promise((resolve, reject) => {
-		// @ts-ignore
-		pm2.list(true, (err, apps) => {
-			if (err) {
-				return reject(err);
-			}
-
-  			return resolve(apps);
-		});
-	});
-}
-
-async function pm2Reload(appName) {
-	let watchedApp = config.watchedApps.find(app => app.name === appName);
-
-	if (watchedApp && !watchedApp.reload) {
-		logger.info(`${appName} is a static app, skipping reload`);
-		return;
-	}
-
-	return new Promise((resolve, reject) => {
-		pm2.reload(appName, (err) => {
-			if(err) {
-				return reject(err);
-			}
-			logger.info(`${appName} was reloaded`);
-			return resolve();
-		});
-	});
-}
-
 async function getApps() {
-	var apps = await pm2List();
-
-	apps = apps.filter(app => !app.pm2_env.axm_options.isModule && app.pm2_env.exec_interpreter === 'node');
-
-	//apps = apps.concat(config.watchedApps);
-
-	var watchedApps = await Promise.all(config.watchedApps.map(app => {
-		return getProjectRoot(app.path, false).then(projectPath => {
-			return {
-				name: app.name,
-				dir: projectPath
-			}
-		});
+	let apps = await Promise.all(config.watchedApps.map(async (app) => {
+		await ensureDeploymentLocation(app.name, app.path);
+		return {
+			name: app.name,
+			dir: app.path
+		}
 	}));
 
-	var getApps = apps.map(item => {
-		let pm2ExecPath = path.dirname(item.pm2_env.pm_exec_path);
-		return getProjectRoot(item.path || pm2ExecPath || item.pm2_env.pm_cwd || item.pm2_env.PWD).then(projectPath => {
-			return {
-				name: item.name,
-				dir: projectPath
-			}
-		}).catch(err => {
-			return null;
-		});
-	});
+	logger.info(`Monitored apps:`, apps.map(app => app.name));
 
-	return Promise.all(getApps).then(apps => {
-		apps = apps.filter(app => !!app);
-
-		return apps.concat(watchedApps);
-	}).then(apps => {
-		logger.info(`Monitored apps:`, apps.map(app => app.name));
-		return apps;
-	});
+	return apps;
 }
 
-function getProjectRoot(dirPath, checkRecursive) {
-	checkRecursive = checkRecursive !== false;
-
-	return pathExists(path.join(dirPath, 'hermes.json')).then(exists => {
-		if (exists) {
-			return dirPath;
-		}
-
-		if (!checkRecursive) {
-			throw new Error(`hermes.json does not exist at path=${dirPath}`);
-		}
-
-		var dirname = path.dirname(dirPath);
-		if (!dirname || dirname === '.' || dirname === '/') {
-			throw new Error('project root not found');
-		}
-
-		return getProjectRoot(dirname);
-	});
-}

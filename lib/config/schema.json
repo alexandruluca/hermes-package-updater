@@ -31,7 +31,7 @@
 			"type": "string"
 		}
 	},
-	"required": ["band", "watchedApps", "serverTag"],
+	"required": ["band", "watchedApps", "serverTag", "deploymentDir"],
 	"anyOf": [{
 		"properties": {
 			"band": {
