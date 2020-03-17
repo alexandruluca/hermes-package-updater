@@ -29,9 +29,12 @@
 		},
 		"deploymentDir": {
 			"type": "string"
+		},
+		"isBackupServer": {
+			"type": "boolean"
 		}
 	},
-	"required": ["band", "watchedApps", "serverTag", "deploymentDir"],
+	"required": ["band", "watchedApps", "serverTag", "deploymentDir", "isBackupServer"],
 	"anyOf": [{
 		"properties": {
 			"band": {
