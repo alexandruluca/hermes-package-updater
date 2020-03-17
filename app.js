@@ -189,6 +189,8 @@ async function reloadApp(appName, skipIfStarted) {
 		type = 'success';
 	} else if (state === 'running') {
 		return;
+	} else {
+		return;
 	}
 
 	logger.info(message);
