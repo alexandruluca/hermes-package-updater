@@ -1,12 +1,12 @@
 {
 	"name": "hermes-package-updater",
-	"version": "2.1.9",
+	"version": "2.1.10",
 	"description": "PM2 Sample Module",
 	"main": "app.js",
 	"dependencies": {
 		"ajv": "6.5.2",
 		"err-code": "1.1.2",
-		"hermes-cli": "https://github.com/alexandruluca/hermes-cli.git#2.1.1",
+		"hermes-cli": "https://github.com/alexandruluca/hermes-cli.git#2.1.2",
 		"log4js": "^4.3.1",
 		"physical-cpu-count": "^2.0.0",
 		"pm2": "2.10.4",
