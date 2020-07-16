@@ -188,6 +188,7 @@ async function reloadApp(appName, skipIfStarted) {
 		message = `${appName} was reloaded`;
 		type = 'success';
 	} else if (state === 'running') {
+		logger.info(`${appName} is already running, skipping reload`);
 		return;
 	} else if (state === 'paused') {
 		logger.info(`${appName} is paused on backup server, skipping reload`);
