@@ -191,6 +191,7 @@ async function reloadApp(appName, skipIfStarted) {
 		return;
 	} else if (state === 'paused') {
 		logger.info(`${appName} is paused on backup server, skipping reload`);
+		return;
 	} else {
 		return;
 	}
