@@ -4,7 +4,7 @@
 	"description": "PM2 Sample Module",
 	"main": "app.js",
 	"dependencies": {
-		"ajv": "6.5.2",
+		"ajv": "6.14.0",
 		"err-code": "1.1.2",
 		"hermes-cli": "https://github.com/alexandruluca/hermes-cli.git#2.1.2",
 		"log4js": "^4.3.1",
